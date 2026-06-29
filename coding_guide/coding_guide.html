@@ -11,7 +11,7 @@
   }
   * { box-sizing:border-box; }
   body {
-    margin:0; background:var(--bg); color:var(--ink); overflow-x:hidden;
+    margin:0; background:var(--bg); color:var(--ink);
     font-family:"Malgun Gothic","맑은 고딕","Noto Sans KR",system-ui,-apple-system,sans-serif;
     line-height:1.6;
   }
@@ -50,10 +50,10 @@
   /* 프롬프트 카드 */
   .prompt-card {
     background:var(--card); border:1px solid var(--line); border-radius:10px;
-    padding:16px 18px; margin-bottom:14px; min-width:0; overflow:hidden;
+    padding:16px 18px; margin-bottom:14px;
   }
-  .pc-head { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; flex-wrap:wrap; }
-  .pc-head h3 { margin:0; font-size:15.5px; color:var(--navy2); flex:1 1 auto; min-width:0; word-break:keep-all; }
+  .pc-head { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; }
+  .pc-head h3 { margin:0; font-size:15.5px; color:var(--navy2); }
   .copy-btn {
     flex:none; cursor:pointer; border:1px solid var(--blue); background:#fff; color:var(--blue);
     border-radius:7px; padding:6px 14px; font:inherit; font-size:13px; transition:.15s;
@@ -62,7 +62,7 @@
   .copy-btn.done { background:#1f9d57; border-color:#1f9d57; color:#fff; }
   .prompt-text {
     margin:0; background:#f7f9fc; border:1px solid var(--line); border-radius:8px;
-    padding:12px 14px; white-space:pre-wrap; word-break:break-word; overflow-wrap:anywhere; max-width:100%; box-sizing:border-box; overflow-x:auto;
+    padding:12px 14px; white-space:pre-wrap; word-break:break-word;
     font-family:"Malgun Gothic","맑은 고딕",system-ui,sans-serif; font-size:14px; color:#243;
   }
   .big-prompt .prompt-text {
@@ -200,7 +200,7 @@
 - 검증 기준 항목은 앱 안에 데이터로 내장하되, 사용자가 화면에서 확인·수정할 수 있게 한다. (지침 개정 대비)
 
 [목적]
-심사원이 작성한 심사보고서(텍스트)를 붙여넣거나 업로드하면, 첨부 지침의 모든 항목에 대해 지침대로 작성되었는지 점검하고, 항목별로 적합/부적합/확인필요를 판정한 뒤 근거와 개선안을 제시한다.
+심사원이 작성한 심사보고서(텍스트 또는 Word 문서)를 붙여넣거나 업로드하면, 첨부 지침의 모든 항목에 대해 지침대로 작성되었는지 점검하고, 항목별로 적합/부적합/확인필요를 판정한 뒤 근거와 개선안을 제시한다.
 
 [화면 구성]
 - 헤더: &quot;IATF 16949 심사보고서 검증 도구&quot;
@@ -210,8 +210,11 @@
 [좌측 입력]
 - 보고서 입력 방법 탭 2개:
   1. &quot;텍스트 붙여넣기&quot;: 큰 textarea(최소 400px)
-  2. &quot;파일 업로드&quot;: .txt, .md 파일 업로드
-- 입력 안내문: &quot;프로세스맵, 요구사항 매트릭스, 준비성평가서, 심사세부일정표, CARA 보고서 등 보고서 본문을 붙여넣으세요.&quot;
+  2. &quot;파일 업로드&quot;: .txt, .md, .docx 파일 업로드
+     - .docx 파일은 브라우저에서 텍스트를 추출해 사용한다. (예: mammoth.js 등 클라이언트 라이브러리로 본문 텍스트 변환, 표 내용도 최대한 살림)
+     - 업로드 후 추출된 텍스트를 미리보기로 보여주고, 텍스트 붙여넣기 영역에도 채워 사용자가 확인·수정할 수 있게 한다.
+     - 지원하지 않는 형식이거나 텍스트 추출에 실패하면 한국어 오류 메시지를 표시한다.
+- 입력 안내문: &quot;프로세스맵, 요구사항 매트릭스, 준비성평가서, 심사세부일정표, CARA 보고서 등 보고서 본문을 붙여넣거나 .txt/.md/.docx 파일로 업로드하세요.&quot;
 
 [우측 검증 결과 — 지침 항목별 카드]
 각 검증 항목을 카드로 표시. 카드마다:
@@ -248,10 +251,11 @@
 - React + TypeScript 단일 페이지 앱
 - Gemini API 호출로 보고서 분석 (AI Studio 내장 연동 사용)
 - 검증 기준은 첨부 md에서 가져와 내장하고, 화면에서 수정 가능하게
-- 한글이 깨지지 않도록 처리</pre>
+- .docx 파일 파싱을 위한 클라이언트 라이브러리(예: mammoth.js) 사용, 업로드 파일은 서버 전송 없이 브라우저에서 처리
+- 입력·추출·다운로드 전 과정에서 한글이 깨지지 않도록 UTF-8로 처리</pre>
     </article>
     <h3 style="font-size:14.5px;color:var(--navy2);margin:18px 0 8px;">강사·운영 메모</h3>
-    <ul class='memo'><li><strong>첨부 파일을 검증 기준으로 쓰는 구조의 장점</strong>: 지침이 개정되면 새 md만 첨부해 다시 생성하면 되므로, 프롬프트를 고칠 필요가 없습니다. 검증 항목 수가 바뀌어도 자동 반영됩니다.</li><li><strong>이 앱은 &quot;참고용 1차 점검 도구&quot;입니다.</strong> 최종 검증반려 여부는 인증기획센터의 공식 판단을 따라야 하며, 앱 판정을 그대로 신뢰하지 않도록 안내가 필요합니다.</li><li><strong>보고서 원본이 PDF/한글(hwp)인 경우</strong>, 본문을 텍스트로 변환해 붙여넣는 흐름이 안정적입니다. (PDF 직접 파싱은 한글 추출 오류 위험)</li><li><strong>민감정보 주의</strong>: 실제 조직명·고객사·심사 데이터가 들어가므로, 무료 등급 Gemini는 입력이 모델 개선에 쓰일 수 있습니다. 실데이터 검증은 유료 API 키 또는 데이터 학습 비활용 설정이 가능한 환경에서 사용하도록 안내하세요.</li></ul>
+    <ul class='memo'><li><strong>첨부 파일을 검증 기준으로 쓰는 구조의 장점</strong>: 지침이 개정되면 새 md만 첨부해 다시 생성하면 되므로, 프롬프트를 고칠 필요가 없습니다. 검증 항목 수가 바뀌어도 자동 반영됩니다.</li><li><strong>이 앱은 &quot;참고용 1차 점검 도구&quot;입니다.</strong> 최종 검증반려 여부는 인증기획센터의 공식 판단을 따라야 하며, 앱 판정을 그대로 신뢰하지 않도록 안내가 필요합니다.</li><li><strong>보고서 원본이 Word(.docx)인 경우</strong> 파일을 그대로 업로드하면 브라우저에서 본문 텍스트가 자동 추출됩니다. <strong>PDF/한글(hwp)인 경우</strong>에는 본문을 텍스트로 변환해 붙여넣는 흐름이 안정적입니다. (PDF 직접 파싱은 한글 추출 오류 위험)</li><li><strong>민감정보 주의</strong>: 실제 조직명·고객사·심사 데이터가 들어가므로, 무료 등급 Gemini는 입력이 모델 개선에 쓰일 수 있습니다. 실데이터 검증은 유료 API 키 또는 데이터 학습 비활용 설정이 가능한 환경에서 사용하도록 안내하세요.</li></ul>
   </section>
   </div>
 
